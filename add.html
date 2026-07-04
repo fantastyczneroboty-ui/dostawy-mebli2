@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dodaj dostawę</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand"><strong>📦 Dostawy Mebli</strong></div>
+  <button class="btn-logout" onclick="logout()">Wyloguj</button>
+</div>
+
+<main>
+  <div class="page-header">
+    <a href="home.html" class="back-link" aria-label="Wróć">←</a>
+    <h1>Dodaj dostawę</h1>
+  </div>
+
+  <form id="add-form">
+    <div class="field">
+      <label class="field-label" for="item_name">Nazwa asortymentu</label>
+      <input type="text" id="item_name" required placeholder="np. Sofa Vero 3-osobowa">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="address">Adres dostawy</label>
+      <input type="text" id="address" required placeholder="np. ul. Kwiatowa 5, Rzeszów">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="phone">Numer telefonu</label>
+      <input type="tel" id="phone" required placeholder="np. 600 123 456">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="payment">Płatność</label>
+      <select id="payment" required>
+        <option value="Gotówka">Gotówka</option>
+        <option value="Przelew">Przelew</option>
+        <option value="Karta">Karta</option>
+        <option value="Za pobraniem">Za pobraniem</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="photo">Zdjęcie (opcjonalnie)</label>
+      <input type="file" id="photo" accept="image/*">
+      <img id="photo-preview" class="photo-preview">
+    </div>
+
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="actions-row">
+      <button type="submit" class="btn btn-amber" id="submit-btn">Zapisz dostawę</button>
+      <a href="home.html" class="btn btn-ghost">Anuluj</a>
+    </div>
+  </form>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>
+  requireLogin();
+
+  const photoInput = document.getElementById("photo");
+  const photoPreview = document.getElementById("photo-preview");
+  photoInput.addEventListener("change", () => {
+    const file = photoInput.files[0];
+    if (file) {
+      photoPreview.src = URL.createObjectURL(file);
+      photoPreview.style.display = "block";
+    } else {
+      photoPreview.style.display = "none";
+    }
+  });
+
+  const form = document.getElementById("add-form");
+  const errorMsg = document.getElementById("error-msg");
+  const submitBtn = document.getElementById("submit-btn");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorMsg.textContent = "";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Zapisywanie...";
+
+    try {
+      let photoUrl = null;
+      const file = photoInput.files[0];
+
+      if (file) {
+        const fileExt = file.name.split(".").pop();
+        const filePath = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+
+        const { error: uploadError } = await supabaseClient
+          .storage
+          .from(PHOTOS_BUCKET)
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrlData } = supabaseClient
+          .storage
+          .from(PHOTOS_BUCKET)
+          .getPublicUrl(filePath);
+
+        photoUrl = publicUrlData.publicUrl;
+      }
+
+      const { error: insertError } = await supabaseClient
+        .from("deliveries")
+        .insert({
+          item_name: document.getElementById("item_name").value.trim(),
+          address: document.getElementById("address").value.trim(),
+          phone: document.getElementById("phone").value.trim(),
+          payment: document.getElementById("payment").value,
+          photo_url: photoUrl
+        });
+
+      if (insertError) throw insertError;
+
+      window.location.href = "home.html";
+    } catch (err) {
+      console.error(err);
+      errorMsg.textContent = "Błąd zapisu: " + (err.message || "spróbuj ponownie.");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Zapisz dostawę";
+    }
+  });
+</script>
+</body>
+</html>

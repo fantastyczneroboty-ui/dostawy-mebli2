@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dostawy Mebli — Logowanie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="crate">📦</div>
+    <h1>Dostawy Mebli</h1>
+    <p class="sub">Podaj 4-cyfrowy kod dostępu</p>
+    <form id="login-form" autocomplete="off">
+      <input type="password" id="pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" aria-label="Kod PIN">
+      <div class="error-msg" id="error-msg"></div>
+      <button type="submit" class="btn btn-amber" style="width:100%;">Zaloguj</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+  const form = document.getElementById("login-form");
+  const pinInput = document.getElementById("pin-input");
+  const errorMsg = document.getElementById("error-msg");
+
+  // Jeśli już zalogowany, od razu przejdź do menu głównego
+  if (localStorage.getItem("dm_logged_in") === "true") {
+    window.location.href = "home.html";
+  }
+
+  pinInput.focus();
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (pinInput.value.trim() === LOGIN_PIN) {
+      localStorage.setItem("dm_logged_in", "true");
+      window.location.href = "home.html";
+    } else {
+      errorMsg.textContent = "Nieprawidłowy kod. Spróbuj ponownie.";
+      pinInput.value = "";
+      pinInput.focus();
+    }
+  });
+</script>
+</body>
+</html>

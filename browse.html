@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Przeglądaj dostawy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand"><strong>📦 Dostawy Mebli</strong></div>
+  <button class="btn-logout" onclick="logout()">Wyloguj</button>
+</div>
+
+<main>
+  <div class="page-header">
+    <a href="home.html" class="back-link" aria-label="Wróć">←</a>
+    <h1>Lista dostaw</h1>
+  </div>
+
+  <div id="content">
+    <div class="loading">Wczytywanie...</div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>
+  requireLogin();
+
+  const content = document.getElementById("content");
+
+  async function loadDeliveries() {
+    const { data, error } = await supabaseClient
+      .from("deliveries")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      content.innerHTML = `<div class="status-msg">Błąd wczytywania: ${error.message}</div>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      content.innerHTML = `
+        <div class="empty-state">
+          <span class="crate">📭</span>
+          Brak dodanych dostaw.<br>Dodaj pierwszą z menu głównego.
+        </div>`;
+      return;
+    }
+
+    const items = data.map((d, i) => `
+      <li>
+        <a href="delivery.html?id=${d.id}">
+          <span class="stamp">${String(i + 1).padStart(2, "0")}</span>
+          <span class="entry-main">
+            <span class="entry-address">${escapeHtml(d.address)}</span>
+            <span class="entry-item">${escapeHtml(d.item_name)}</span>
+          </span>
+          <span class="chevron">›</span>
+        </a>
+      </li>
+    `).join("");
+
+    content.innerHTML = `<ol class="manifest">${items}</ol>`;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str || "";
+    return div.innerHTML;
+  }
+
+  loadDeliveries();
+</script>
+</body>
+</html>

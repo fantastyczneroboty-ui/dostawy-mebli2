@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Szczegóły dostawy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand"><strong>📦 Dostawy Mebli</strong></div>
+  <button class="btn-logout" onclick="logout()">Wyloguj</button>
+</div>
+
+<main>
+  <div class="page-header">
+    <a href="browse.html" class="back-link" aria-label="Wróć do listy">←</a>
+    <h1>Szczegóły dostawy</h1>
+  </div>
+
+  <div id="content">
+    <div class="loading">Wczytywanie...</div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>
+  requireLogin();
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const content = document.getElementById("content");
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str || "";
+    return div.innerHTML;
+  }
+
+  async function loadDelivery() {
+    if (!id) {
+      content.innerHTML = `<div class="status-msg">Nie znaleziono dostawy.</div>`;
+      return;
+    }
+
+    const { data, error } = await supabaseClient
+      .from("deliveries")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      content.innerHTML = `<div class="status-msg">Nie znaleziono dostawy.</div>`;
+      return;
+    }
+
+    const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(data.address);
+    const dateStr = new Date(data.created_at).toLocaleString("pl-PL");
+
+    content.innerHTML = `
+      <div class="detail-card">
+        <div class="detail-row">
+          <div class="field-label">Nazwa asortymentu</div>
+          <div class="value">${escapeHtml(data.item_name)}</div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Adres dostawy</div>
+          <div class="value">
+            <a class="maps-link" href="${mapsUrl}" target="_blank" rel="noopener">📍 ${escapeHtml(data.address)}</a>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Numer telefonu</div>
+          <div class="value"><a class="tel-link" href="tel:${escapeHtml(data.phone)}">${escapeHtml(data.phone)}</a></div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Płatność</div>
+          <div class="value">${escapeHtml(data.payment)}</div>
+        </div>
+        ${data.photo_url ? `
+        <div class="detail-row">
+          <div class="field-label">Zdjęcie</div>
+          <img class="detail-photo" src="${data.photo_url}" alt="Zdjęcie dostawy">
+        </div>` : ""}
+        <div class="detail-row">
+          <div class="field-label">Dodano</div>
+          <div class="value mono">${dateStr}</div>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <a href="edit.html?id=${data.id}" class="btn btn-primary">Edytuj</a>
+        <button class="btn btn-danger" id="delete-btn">Usuń dostawę</button>
+        <a href="browse.html" class="btn btn-ghost">Powrót do listy</a>
+      </div>
+    `;
+
+    document.getElementById("delete-btn").addEventListener("click", async () => {
+      if (!confirm("Na pewno usunąć tę dostawę? Tej operacji nie można cofnąć.")) return;
+      const { error: delError } = await supabaseClient.from("deliveries").delete().eq("id", id);
+      if (delError) {
+        alert("Błąd usuwania: " + delError.message);
+        return;
+      }
+      window.location.href = "browse.html";
+    });
+  }
+
+  loadDelivery();
+</script>
+</body>
+</html>
