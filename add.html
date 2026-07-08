@@ -38,12 +38,56 @@
     </div>
 
     <div class="field">
+      <label class="field-label" for="value">Wartość</label>
+      <input type="text" inputmode="decimal" id="value" placeholder="np. 4500 zł">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="deposit">Zadatek</label>
+      <input type="text" inputmode="decimal" id="deposit" placeholder="np. 500 zł">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="surcharge">Dopłata</label>
+      <input type="text" inputmode="decimal" id="surcharge" placeholder="np. 200 zł">
+    </div>
+
+    <div class="field">
       <label class="field-label" for="payment">Płatność</label>
       <select id="payment" required>
         <option value="Gotówka">Gotówka</option>
         <option value="Przelew">Przelew</option>
         <option value="Karta">Karta</option>
         <option value="Za pobraniem">Za pobraniem</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="floor">Piętro</label>
+      <select id="floor" required>
+        <option value="Parter">Parter</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6+">6 i więcej</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="carry_in">Wniesienie</label>
+      <select id="carry_in" required>
+        <option value="Tak">Tak</option>
+        <option value="Nie">Nie</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="assembly">Montaż</label>
+      <select id="assembly" required>
+        <option value="Tak">Tak</option>
+        <option value="Nie">Nie</option>
       </select>
     </div>
 
@@ -120,6 +164,12 @@
           address: document.getElementById("address").value.trim(),
           phone: document.getElementById("phone").value.trim(),
           payment: document.getElementById("payment").value,
+          value: document.getElementById("value").value.trim(),
+          floor: document.getElementById("floor").value,
+          deposit: document.getElementById("deposit").value.trim(),
+          surcharge: document.getElementById("surcharge").value.trim(),
+          carry_in: document.getElementById("carry_in").value,
+          assembly: document.getElementById("assembly").value,
           photo_url: photoUrl
         });
 

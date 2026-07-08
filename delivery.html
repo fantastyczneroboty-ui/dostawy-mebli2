@@ -82,6 +82,30 @@
           <div class="field-label">Płatność</div>
           <div class="value">${escapeHtml(data.payment)}</div>
         </div>
+        <div class="detail-row">
+          <div class="field-label">Wartość</div>
+          <div class="value">${escapeHtml(data.value) || "—"}</div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Zadatek</div>
+          <div class="value">${escapeHtml(data.deposit) || "—"}</div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Dopłata</div>
+          <div class="value">${escapeHtml(data.surcharge) || "—"}</div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Piętro</div>
+          <div class="value">${escapeHtml(data.floor) || "—"}</div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Wniesienie</div>
+          <div class="value">${escapeHtml(data.carry_in) || "—"}</div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Montaż</div>
+          <div class="value">${escapeHtml(data.assembly) || "—"}</div>
+        </div>
         ${data.photo_url ? `
         <div class="detail-row">
           <div class="field-label">Zdjęcie</div>
