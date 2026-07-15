@@ -40,27 +40,40 @@
     </div>
 
     <div class="field">
-      <label class="field-label" for="value">Wartość</label>
-      <input type="text" inputmode="decimal" id="value">
+      <label class="field-label" for="phone2">Numer telefonu 2 (opcjonalnie)</label>
+      <input type="tel" id="phone2">
     </div>
 
     <div class="field">
-      <label class="field-label" for="deposit">Zadatek</label>
-      <input type="text" inputmode="decimal" id="deposit">
+      <label class="field-label" for="value">Wartość (zł)</label>
+      <input type="number" step="0.01" id="value">
     </div>
 
     <div class="field">
-      <label class="field-label" for="surcharge">Dopłata</label>
-      <input type="text" inputmode="decimal" id="surcharge">
+      <label class="field-label" for="transport_price">Cena transportu + wniesienie (zł)</label>
+      <input type="number" step="0.01" id="transport_price">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Łączna kwota do zapłaty</label>
+      <div class="computed-total" id="total_display">0,00 zł</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="deposit">Zadatek (zł)</label>
+      <input type="number" step="0.01" id="deposit">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="surcharge">Dopłata (zł)</label>
+      <input type="number" step="0.01" id="surcharge">
     </div>
 
     <div class="field">
       <label class="field-label" for="payment">Płatność</label>
       <select id="payment" required>
         <option value="Gotówka">Gotówka</option>
-        <option value="Przelew">Przelew</option>
-        <option value="Karta">Karta</option>
-        <option value="Za pobraniem">Za pobraniem</option>
+        <option value="Płatność kartą">Płatność kartą</option>
       </select>
     </div>
 
@@ -80,16 +93,16 @@
     <div class="field">
       <label class="field-label" for="carry_in">Wniesienie</label>
       <select id="carry_in" required>
-        <option value="Tak">Tak</option>
         <option value="Nie">Nie</option>
+        <option value="Tak">Tak</option>
       </select>
     </div>
 
     <div class="field">
       <label class="field-label" for="assembly">Montaż</label>
       <select id="assembly" required>
-        <option value="Tak">Tak</option>
         <option value="Nie">Nie</option>
+        <option value="Tak">Tak</option>
       </select>
     </div>
 
@@ -125,6 +138,22 @@
   const submitBtn = document.getElementById("submit-btn");
   const photoInput = document.getElementById("photo");
   const photoPreview = document.getElementById("photo-preview");
+  const valueInput = document.getElementById("value");
+  const transportInput = document.getElementById("transport_price");
+  const totalDisplay = document.getElementById("total_display");
+
+  function calcTotal() {
+    const v = parseFloat(valueInput.value) || 0;
+    const t = parseFloat(transportInput.value) || 0;
+    return v + t;
+  }
+
+  function updateTotalDisplay() {
+    totalDisplay.textContent = calcTotal().toFixed(2).replace(".", ",") + " zł";
+  }
+
+  valueInput.addEventListener("input", updateTotalDisplay);
+  transportInput.addEventListener("input", updateTotalDisplay);
 
   let currentPhotoUrl = null;
 
@@ -155,13 +184,16 @@
     document.getElementById("item_name").value = data.item_name || "";
     document.getElementById("address").value = data.address || "";
     document.getElementById("phone").value = data.phone || "";
+    document.getElementById("phone2").value = data.phone2 || "";
     document.getElementById("payment").value = data.payment || "Gotówka";
     document.getElementById("value").value = data.value || "";
+    document.getElementById("transport_price").value = data.transport_price || "";
     document.getElementById("floor").value = data.floor || "Parter";
     document.getElementById("deposit").value = data.deposit || "";
     document.getElementById("surcharge").value = data.surcharge || "";
     document.getElementById("carry_in").value = data.carry_in || "Nie";
     document.getElementById("assembly").value = data.assembly || "Nie";
+    updateTotalDisplay();
     currentPhotoUrl = data.photo_url;
     if (currentPhotoUrl) {
       photoPreview.src = currentPhotoUrl;
@@ -207,8 +239,11 @@
           item_name: document.getElementById("item_name").value.trim(),
           address: document.getElementById("address").value.trim(),
           phone: document.getElementById("phone").value.trim(),
+          phone2: document.getElementById("phone2").value.trim(),
           payment: document.getElementById("payment").value,
           value: document.getElementById("value").value.trim(),
+          transport_price: document.getElementById("transport_price").value.trim(),
+          total_amount: calcTotal().toFixed(2),
           floor: document.getElementById("floor").value,
           deposit: document.getElementById("deposit").value.trim(),
           surcharge: document.getElementById("surcharge").value.trim(),

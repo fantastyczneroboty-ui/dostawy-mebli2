@@ -38,27 +38,40 @@
     </div>
 
     <div class="field">
-      <label class="field-label" for="value">Wartość</label>
-      <input type="text" inputmode="decimal" id="value" placeholder="np. 4500 zł">
+      <label class="field-label" for="phone2">Numer telefonu 2 (opcjonalnie)</label>
+      <input type="tel" id="phone2" placeholder="np. 600 654 321">
     </div>
 
     <div class="field">
-      <label class="field-label" for="deposit">Zadatek</label>
-      <input type="text" inputmode="decimal" id="deposit" placeholder="np. 500 zł">
+      <label class="field-label" for="value">Wartość (zł)</label>
+      <input type="number" step="0.01" id="value" placeholder="np. 4500">
     </div>
 
     <div class="field">
-      <label class="field-label" for="surcharge">Dopłata</label>
-      <input type="text" inputmode="decimal" id="surcharge" placeholder="np. 200 zł">
+      <label class="field-label" for="transport_price">Cena transportu + wniesienie (zł)</label>
+      <input type="number" step="0.01" id="transport_price" placeholder="np. 200">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Łączna kwota do zapłaty</label>
+      <div class="computed-total" id="total_display">0,00 zł</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="deposit">Zadatek (zł)</label>
+      <input type="number" step="0.01" id="deposit" placeholder="np. 500">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="surcharge">Dopłata (zł)</label>
+      <input type="number" step="0.01" id="surcharge" placeholder="np. 200">
     </div>
 
     <div class="field">
       <label class="field-label" for="payment">Płatność</label>
       <select id="payment" required>
-        <option value="Gotówka">Gotówka</option>
-        <option value="Przelew">Przelew</option>
-        <option value="Karta">Karta</option>
-        <option value="Za pobraniem">Za pobraniem</option>
+        <option value="Gotówka" selected>Gotówka</option>
+        <option value="Płatność kartą">Płatność kartą</option>
       </select>
     </div>
 
@@ -78,16 +91,16 @@
     <div class="field">
       <label class="field-label" for="carry_in">Wniesienie</label>
       <select id="carry_in" required>
+        <option value="Nie" selected>Nie</option>
         <option value="Tak">Tak</option>
-        <option value="Nie">Nie</option>
       </select>
     </div>
 
     <div class="field">
       <label class="field-label" for="assembly">Montaż</label>
       <select id="assembly" required>
+        <option value="Nie" selected>Nie</option>
         <option value="Tak">Tak</option>
-        <option value="Nie">Nie</option>
       </select>
     </div>
 
@@ -128,6 +141,23 @@
   const errorMsg = document.getElementById("error-msg");
   const submitBtn = document.getElementById("submit-btn");
 
+  const valueInput = document.getElementById("value");
+  const transportInput = document.getElementById("transport_price");
+  const totalDisplay = document.getElementById("total_display");
+
+  function calcTotal() {
+    const v = parseFloat(valueInput.value) || 0;
+    const t = parseFloat(transportInput.value) || 0;
+    return v + t;
+  }
+
+  function updateTotalDisplay() {
+    totalDisplay.textContent = calcTotal().toFixed(2).replace(".", ",") + " zł";
+  }
+
+  valueInput.addEventListener("input", updateTotalDisplay);
+  transportInput.addEventListener("input", updateTotalDisplay);
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     errorMsg.textContent = "";
@@ -163,8 +193,11 @@
           item_name: document.getElementById("item_name").value.trim(),
           address: document.getElementById("address").value.trim(),
           phone: document.getElementById("phone").value.trim(),
+          phone2: document.getElementById("phone2").value.trim(),
           payment: document.getElementById("payment").value,
           value: document.getElementById("value").value.trim(),
+          transport_price: document.getElementById("transport_price").value.trim(),
+          total_amount: calcTotal().toFixed(2),
           floor: document.getElementById("floor").value,
           deposit: document.getElementById("deposit").value.trim(),
           surcharge: document.getElementById("surcharge").value.trim(),

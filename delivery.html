@@ -78,21 +78,34 @@
           <div class="field-label">Numer telefonu</div>
           <div class="value"><a class="tel-link" href="tel:${escapeHtml(data.phone)}">${escapeHtml(data.phone)}</a></div>
         </div>
+        ${data.phone2 ? `
+        <div class="detail-row">
+          <div class="field-label">Numer telefonu 2</div>
+          <div class="value"><a class="tel-link" href="tel:${escapeHtml(data.phone2)}">${escapeHtml(data.phone2)}</a></div>
+        </div>` : ""}
         <div class="detail-row">
           <div class="field-label">Płatność</div>
           <div class="value">${escapeHtml(data.payment)}</div>
         </div>
         <div class="detail-row">
           <div class="field-label">Wartość</div>
-          <div class="value">${escapeHtml(data.value) || "—"}</div>
+          <div class="value">${escapeHtml(data.value) || "—"} zł</div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Cena transportu + wniesienie</div>
+          <div class="value">${escapeHtml(data.transport_price) || "—"} zł</div>
+        </div>
+        <div class="detail-row">
+          <div class="field-label">Łączna kwota do zapłaty</div>
+          <div class="value total-highlight">${escapeHtml(data.total_amount) || "—"} zł</div>
         </div>
         <div class="detail-row">
           <div class="field-label">Zadatek</div>
-          <div class="value">${escapeHtml(data.deposit) || "—"}</div>
+          <div class="value">${escapeHtml(data.deposit) || "—"} zł</div>
         </div>
         <div class="detail-row">
           <div class="field-label">Dopłata</div>
-          <div class="value">${escapeHtml(data.surcharge) || "—"}</div>
+          <div class="value">${escapeHtml(data.surcharge) || "—"} zł</div>
         </div>
         <div class="detail-row">
           <div class="field-label">Piętro</div>
