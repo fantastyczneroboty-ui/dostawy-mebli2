@@ -415,7 +415,11 @@ main {
 }
 
 /* ===== Wersja do druku (potwierdzenie dla klienta) ===== */
-.print-only { display: none; }
+.print-only { display: none !important; }
+
+@media print {
+  .print-only { display: block !important; }
+}
 
 .print-doc {
   background: #ffffff;
