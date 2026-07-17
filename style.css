@@ -483,15 +483,20 @@ main {
 }
 
 @media print {
-  body * { visibility: hidden; }
-  #print-section, #print-section * { visibility: visible; }
+  .topbar, .page-header, #content { display: none !important; }
   #print-section {
     display: block !important;
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: static;
     width: 100%;
-    padding: 1.5cm;
+    padding: 0;
   }
-  body { background: #ffffff !important; }
+  body {
+    background: #ffffff !important;
+    display: block !important;
+  }
+  main {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
 }
