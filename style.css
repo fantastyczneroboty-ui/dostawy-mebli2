@@ -413,3 +413,81 @@ main {
   main { padding: 1.5rem 1rem 2.5rem; }
   .login-card { padding: 2rem 1.4rem; }
 }
+
+/* ===== Wersja do druku (potwierdzenie dla klienta) ===== */
+.print-only { display: none; }
+
+.print-doc {
+  background: #ffffff;
+  color: #111111;
+  padding: 0;
+}
+.print-header {
+  border-bottom: 2px solid #111111;
+  padding-bottom: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+.print-header h2 {
+  color: #111111;
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+.print-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  color: #444444;
+}
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+.print-table td {
+  padding: 0.55rem 0.4rem;
+  border-bottom: 1px solid #cccccc;
+  font-size: 0.95rem;
+  vertical-align: top;
+}
+.print-table td:first-child {
+  font-weight: 700;
+  width: 45%;
+  color: #333333;
+}
+.print-table tr.print-total-row td {
+  font-weight: 700;
+  font-size: 1.05rem;
+  border-bottom: 2px solid #111111;
+}
+.print-stamp-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 3rem;
+}
+.print-stamp-box {
+  width: 240px;
+  height: 130px;
+  border: 1.5px dashed #666666;
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.6rem;
+}
+.print-stamp-box span {
+  font-size: 0.78rem;
+  color: #777777;
+}
+
+@media print {
+  body * { visibility: hidden; }
+  #print-section, #print-section * { visibility: visible; }
+  #print-section {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5cm;
+  }
+  body { background: #ffffff !important; }
+}

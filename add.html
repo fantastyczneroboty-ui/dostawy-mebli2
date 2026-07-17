@@ -196,7 +196,7 @@
         photoUrl = publicUrlData.publicUrl;
       }
 
-      const { error: insertError } = await supabaseClient
+      const { data: inserted, error: insertError } = await supabaseClient
         .from("deliveries")
         .insert({
           item_name: document.getElementById("item_name").value.trim(),
@@ -213,11 +213,13 @@
           carry_in: document.getElementById("carry_in").value,
           assembly: document.getElementById("assembly").value,
           photo_url: photoUrl
-        });
+        })
+        .select()
+        .single();
 
       if (insertError) throw insertError;
 
-      window.location.href = "home.html";
+      window.location.href = `delivery.html?id=${inserted.id}`;
     } catch (err) {
       console.error(err);
       errorMsg.textContent = "Błąd zapisu: " + (err.message || "spróbuj ponownie.");

@@ -24,6 +24,8 @@
   <div id="content">
     <div class="loading">Wczytywanie...</div>
   </div>
+
+  <div id="print-section" class="print-only"></div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -132,10 +134,17 @@
 
       <div class="actions-row">
         <a href="edit.html?id=${data.id}" class="btn btn-primary">Edytuj</a>
+        <button class="btn btn-amber" id="print-btn">🖨️ Drukuj dla klienta</button>
         <button class="btn btn-danger" id="delete-btn">Usuń dostawę</button>
         <a href="browse.html" class="btn btn-ghost">Powrót do listy</a>
       </div>
     `;
+
+    buildPrintSection(data, dateStr);
+
+    document.getElementById("print-btn").addEventListener("click", () => {
+      window.print();
+    });
 
     document.getElementById("delete-btn").addEventListener("click", async () => {
       if (!confirm("Na pewno usunąć tę dostawę? Tej operacji nie można cofnąć.")) return;
@@ -146,6 +155,39 @@
       }
       window.location.href = "browse.html";
     });
+  }
+
+  function buildPrintSection(data, dateStr) {
+    const printEl = document.getElementById("print-section");
+    printEl.innerHTML = `
+      <div class="print-doc">
+        <div class="print-header">
+          <h2>Potwierdzenie dostawy</h2>
+          <div class="print-date">Data wystawienia: ${dateStr}</div>
+        </div>
+
+        <table class="print-table">
+          <tr><td>Nazwa asortymentu</td><td>${escapeHtml(data.item_name)}</td></tr>
+          <tr><td>Adres dostawy</td><td>${escapeHtml(data.address)}</td></tr>
+          <tr><td>Numer telefonu</td><td>${escapeHtml(data.phone)}${data.phone2 ? " / " + escapeHtml(data.phone2) : ""}</td></tr>
+          <tr><td>Piętro</td><td>${escapeHtml(data.floor) || "—"}</td></tr>
+          <tr><td>Wniesienie</td><td>${escapeHtml(data.carry_in) || "—"}</td></tr>
+          <tr><td>Montaż</td><td>${escapeHtml(data.assembly) || "—"}</td></tr>
+          <tr><td>Płatność</td><td>${escapeHtml(data.payment)}</td></tr>
+          <tr><td>Wartość</td><td>${escapeHtml(data.value) || "—"} zł</td></tr>
+          <tr><td>Cena transportu + wniesienie</td><td>${escapeHtml(data.transport_price) || "—"} zł</td></tr>
+          <tr class="print-total-row"><td>Łączna kwota do zapłaty</td><td>${escapeHtml(data.total_amount) || "—"} zł</td></tr>
+          <tr><td>Zadatek</td><td>${escapeHtml(data.deposit) || "—"} zł</td></tr>
+          <tr class="print-total-row"><td>Dopłata (pozostało do zapłaty)</td><td>${escapeHtml(data.surcharge) || "—"} zł</td></tr>
+        </table>
+
+        <div class="print-stamp-row">
+          <div class="print-stamp-box">
+            <span>Miejsce na pieczątkę i podpis</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   loadDelivery();
