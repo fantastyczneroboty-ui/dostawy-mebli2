@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radio Warszawa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .radio-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .radio-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 2.6rem 2rem;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+  }
+  .radio-emoji { font-size: 2.6rem; margin-bottom: 0.6rem; }
+  .radio-card h1 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+  .radio-card p.sub { color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 2rem; }
+
+  .radio-toggle-btn {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 2px solid var(--amber);
+    background: rgba(232, 163, 61, 0.1);
+    color: var(--amber);
+    font-size: 2.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.4rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .radio-toggle-btn:hover { transform: scale(1.03); }
+  .radio-toggle-btn.playing {
+    background: rgba(232, 163, 61, 0.22);
+    animation: radio-pulse-big 1.8s ease-in-out infinite;
+  }
+  @keyframes radio-pulse-big {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232, 163, 61, 0.35); }
+    50% { box-shadow: 0 0 0 12px rgba(232, 163, 61, 0); }
+  }
+
+  .radio-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    min-height: 1.2em;
+  }
+  .radio-status.on { color: var(--amber); font-weight: 700; }
+
+  .radio-hint {
+    margin-top: 1.6rem;
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand"><strong>📦 Dostawy Mebli</strong></div>
+  <a href="home.html" class="topbar-start-btn">Start</a>
+</div>
+
+<div class="radio-wrap">
+  <div class="radio-card">
+    <div class="radio-emoji">📻</div>
+    <h1>Radio Warszawa</h1>
+    <p class="sub">106,2 FM — słuchaj na żywo</p>
+
+    <audio id="radio-audio" preload="none" src="https://stream2.technologicznie.net/radio_warszawa.mp3"></audio>
+
+    <button type="button" class="radio-toggle-btn" id="radio-toggle" aria-label="Włącz radio">▶</button>
+
+    <div class="radio-status" id="radio-status">Zatrzymane</div>
+
+    <div class="radio-hint">
+      Tę kartę możesz zostawić otwartą w tle — radio będzie grało niezależnie od tego, co robisz na pozostałych kartach przeglądarki.
+    </div>
+  </div>
+</div>
+
+<script>
+  const btn = document.getElementById("radio-toggle");
+  const audio = document.getElementById("radio-audio");
+  const status = document.getElementById("radio-status");
+
+  btn.addEventListener("click", () => {
+    if (audio.paused) {
+      btn.disabled = true;
+      status.textContent = "Łączenie...";
+      audio.play()
+        .then(() => {
+          btn.classList.add("playing");
+          btn.textContent = "❚❚";
+          btn.setAttribute("aria-label", "Zatrzymaj radio");
+          status.textContent = "Gra na żywo";
+          status.classList.add("on");
+        })
+        .catch(() => {
+          status.textContent = "Nie udało się uruchomić. Spróbuj ponownie.";
+        })
+        .finally(() => { btn.disabled = false; });
+    } else {
+      audio.pause();
+      btn.classList.remove("playing");
+      btn.textContent = "▶";
+      btn.setAttribute("aria-label", "Włącz radio");
+      status.textContent = "Zatrzymane";
+      status.classList.remove("on");
+    }
+  });
+</script>
+</body>
+</html>

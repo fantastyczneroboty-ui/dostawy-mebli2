@@ -101,6 +101,19 @@ button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visi
 }
 .btn-ghost:hover { border-color: var(--ink-soft); }
 
+.btn-radio {
+  background: rgba(63, 143, 105, 0.16);
+  color: #8FDDB0;
+  border: 1.5px solid rgba(111, 191, 141, 0.5);
+  font-weight: 700;
+}
+.btn-radio:hover {
+  background: rgba(63, 143, 105, 0.26);
+  border-color: #6FBF8D;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
 /* Top bar */
 .topbar {
   background: #17181c;
