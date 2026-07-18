@@ -13,9 +13,9 @@ const PHOTOS_BUCKET = "delivery-photos";
 
 // Domyślne dane sprzedawcy na fakturach (można zmienić tutaj raz na zawsze,
 // albo ręcznie przy każdej fakturze — pola na stronie są edytowalne)
-const SELLER_NAME = "Nazwa Twojej Firmy";
-const SELLER_ADDRESS = "ul. Przykładowa 1, 00-000 Miasto";
-const SELLER_NIP = "000-000-00-00";
+const SELLER_NAME = "UNIKAT";
+const SELLER_ADDRESS = "UNIKAT";
+const SELLER_NIP = "UNIKAT";
 
 // ---- Inicjalizacja klienta Supabase (nie zmieniaj poniżej) ----
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
