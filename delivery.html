@@ -134,15 +134,20 @@
 
       <div class="actions-row">
         <a href="edit.html?id=${data.id}" class="btn btn-primary">Edytuj</a>
-        <button class="btn btn-amber" id="print-btn">🖨️ Drukuj dla klienta</button>
+        <button class="btn btn-amber" id="print-client-btn">🖨️ Drukuj dla klienta</button>
+        <button class="btn btn-ghost" id="print-company-btn">🖨️ Drukuj dla firmy</button>
         <button class="btn btn-danger" id="delete-btn">Usuń dostawę</button>
         <a href="browse.html" class="btn btn-ghost">Powrót do listy</a>
       </div>
     `;
 
-    buildPrintSection(data, dateStr);
+    document.getElementById("print-client-btn").addEventListener("click", () => {
+      buildPrintSection(data, dateStr, "client");
+      window.print();
+    });
 
-    document.getElementById("print-btn").addEventListener("click", () => {
+    document.getElementById("print-company-btn").addEventListener("click", () => {
+      buildPrintSection(data, dateStr, "company");
       window.print();
     });
 
@@ -157,12 +162,30 @@
     });
   }
 
-  function buildPrintSection(data, dateStr) {
+  function buildPrintSection(data, dateStr, variant) {
     const printEl = document.getElementById("print-section");
+
+    const footerHtml = variant === "company"
+      ? `
+        <div class="print-notes-section">
+          <div class="print-notes-label">Dodatki i uwagi:</div>
+          <div class="print-notes-box"></div>
+        </div>
+      `
+      : `
+        <div class="print-stamp-row">
+          <div class="print-stamp-box">
+            <span>Miejsce na pieczątkę i podpis</span>
+          </div>
+        </div>
+      `;
+
+    const titleHtml = variant === "company" ? "Potwierdzenie dostawy — kopia dla firmy" : "Potwierdzenie dostawy";
+
     printEl.innerHTML = `
       <div class="print-doc">
         <div class="print-header">
-          <h2>Potwierdzenie dostawy</h2>
+          <h2>${titleHtml}</h2>
           <div class="print-date">Data wystawienia: ${dateStr}</div>
         </div>
 
@@ -181,11 +204,7 @@
           <tr class="print-total-row"><td>Dopłata (pozostało do zapłaty)</td><td>${escapeHtml(data.surcharge) || "—"} zł</td></tr>
         </table>
 
-        <div class="print-stamp-row">
-          <div class="print-stamp-box">
-            <span>Miejsce na pieczątkę i podpis</span>
-          </div>
-        </div>
+        ${footerHtml}
       </div>
     `;
   }

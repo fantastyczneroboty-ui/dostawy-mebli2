@@ -482,6 +482,29 @@ main {
   color: #777777;
 }
 
+.print-notes-section {
+  margin-top: 2.5rem;
+}
+.print-notes-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #111111;
+  margin-bottom: 0.5rem;
+}
+.print-notes-box {
+  min-height: 180px;
+  border: 1.5px solid #666666;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    #cccccc 28px
+  );
+  background-position: 0 34px;
+}
+
 @media print {
   .topbar, .page-header, #content { display: none !important; }
   #print-section {
