@@ -2,7 +2,7 @@
 // KONFIGURACJA — uzupełnij te dwie wartości po założeniu
 // darmowego konta na https://supabase.com (patrz README.md)
 // ============================================================
-const SUPABASE_URL = "https://vyziznntgiyfllaburot.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://vyziznntgiyfllaburot.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_pL_rjjx0jyPlXEFSVpKoDA_DXE7eFh7";
 
 // Kod PIN do logowania (możesz zmienić na dowolne 4 cyfry)
