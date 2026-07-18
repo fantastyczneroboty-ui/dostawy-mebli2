@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wystaw fakturę</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand"><strong>📦 Dostawy Mebli</strong></div>
+  <button class="btn-logout" onclick="logout()">Wyloguj</button>
+</div>
+
+<main class="invoice-main">
+  <div class="page-header">
+    <a href="home.html" class="back-link" aria-label="Wróć">←</a>
+    <h1>Wystaw fakturę</h1>
+  </div>
+
+  <form id="invoice-form">
+
+    <h3 class="section-title">Dane faktury</h3>
+    <div class="field-grid">
+      <div class="field">
+        <label class="field-label" for="inv_number">Numer faktury</label>
+        <input type="text" id="inv_number" placeholder="np. 12/07/2026">
+      </div>
+      <div class="field">
+        <label class="field-label" for="inv_place">Miejsce wystawienia</label>
+        <input type="text" id="inv_place" placeholder="np. Rzeszów">
+      </div>
+      <div class="field">
+        <label class="field-label" for="inv_issue_date">Data wystawienia</label>
+        <input type="date" id="inv_issue_date">
+      </div>
+      <div class="field">
+        <label class="field-label" for="inv_sale_date">Data sprzedaży</label>
+        <input type="date" id="inv_sale_date">
+      </div>
+      <div class="field">
+        <label class="field-label" for="inv_due_date">Termin płatności</label>
+        <input type="date" id="inv_due_date">
+      </div>
+      <div class="field">
+        <label class="field-label" for="inv_payment">Sposób płatności</label>
+        <select id="inv_payment">
+          <option value="Gotówka">Gotówka</option>
+          <option value="Przelew">Przelew</option>
+          <option value="Płatność kartą">Płatność kartą</option>
+        </select>
+      </div>
+    </div>
+
+    <h3 class="section-title">Sprzedawca</h3>
+    <div class="field-grid">
+      <div class="field field-wide">
+        <label class="field-label" for="seller_name">Nazwa firmy</label>
+        <input type="text" id="seller_name">
+      </div>
+      <div class="field field-wide">
+        <label class="field-label" for="seller_address">Adres</label>
+        <input type="text" id="seller_address">
+      </div>
+      <div class="field">
+        <label class="field-label" for="seller_nip">NIP</label>
+        <input type="text" id="seller_nip">
+      </div>
+    </div>
+
+    <h3 class="section-title">Nabywca</h3>
+    <div class="field-grid">
+      <div class="field field-wide">
+        <label class="field-label" for="buyer_name">Nazwa / Imię i nazwisko</label>
+        <input type="text" id="buyer_name" placeholder="np. Jan Kowalski">
+      </div>
+      <div class="field field-wide">
+        <label class="field-label" for="buyer_address">Adres</label>
+        <input type="text" id="buyer_address" placeholder="np. ul. Kwiatowa 5, Rzeszów">
+      </div>
+      <div class="field">
+        <label class="field-label" for="buyer_nip">NIP (opcjonalnie)</label>
+        <input type="text" id="buyer_nip">
+      </div>
+    </div>
+
+    <h3 class="section-title">Pozycje faktury</h3>
+    <div class="items-table-wrap">
+      <table class="items-table" id="items-table">
+        <thead>
+          <tr>
+            <th>Nazwa towaru / usługi</th>
+            <th class="col-narrow">Ilość</th>
+            <th class="col-narrow">J.m.</th>
+            <th class="col-narrow">Cena netto</th>
+            <th class="col-narrow">VAT</th>
+            <th class="col-narrow">Wartość netto</th>
+            <th class="col-narrow">Kwota VAT</th>
+            <th class="col-narrow">Wartość brutto</th>
+            <th class="col-icon"></th>
+          </tr>
+        </thead>
+        <tbody id="items-body"></tbody>
+      </table>
+    </div>
+    <button type="button" class="btn btn-ghost btn-small" id="add-row-btn">+ Dodaj pozycję</button>
+
+    <h3 class="section-title">Podsumowanie</h3>
+    <div class="summary-grid">
+      <div class="field">
+        <label class="field-label">Razem netto</label>
+        <div class="computed-total" id="sum-net">0,00 zł</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Razem VAT</label>
+        <div class="computed-total" id="sum-vat">0,00 zł</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Razem brutto</label>
+        <div class="computed-total" id="sum-gross">0,00 zł</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Uwagi</h3>
+    <div class="field">
+      <textarea id="inv_notes" rows="3" placeholder="np. dodatkowe informacje dla klienta (opcjonalnie)"></textarea>
+    </div>
+
+    <div class="actions-row">
+      <button type="button" class="btn btn-amber" id="print-invoice-btn">🖨️ Drukuj fakturę</button>
+      <a href="home.html" class="btn btn-ghost">Powrót do menu</a>
+    </div>
+  </form>
+
+  <div id="print-section" class="print-only" style="display:none;"></div>
+</main>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>
+  requireLogin();
+
+  // ---- Prefill danych domyślnych ----
+  document.getElementById("seller_name").value = SELLER_NAME;
+  document.getElementById("seller_address").value = SELLER_ADDRESS;
+  document.getElementById("seller_nip").value = SELLER_NIP;
+
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById("inv_issue_date").value = today;
+  document.getElementById("inv_sale_date").value = today;
+  document.getElementById("inv_due_date").value = today;
+
+  // ---- Pozycje faktury ----
+  const itemsBody = document.getElementById("items-body");
+  let rowCounter = 0;
+
+  function formatMoney(n) {
+    return n.toFixed(2).replace(".", ",");
+  }
+
+  function addRow(prefill) {
+    rowCounter++;
+    const tr = document.createElement("tr");
+    tr.className = "item-row";
+    tr.innerHTML = `
+      <td><input type="text" class="item-name" placeholder="np. Sofa Vero 3-osobowa"></td>
+      <td><input type="number" class="item-qty" value="1" min="0" step="0.01"></td>
+      <td><input type="text" class="item-unit" value="szt."></td>
+      <td><input type="number" class="item-price" placeholder="0.00" min="0" step="0.01"></td>
+      <td>
+        <select class="item-vat">
+          <option value="23">23%</option>
+          <option value="8">8%</option>
+          <option value="5">5%</option>
+          <option value="0">0%</option>
+          <option value="zw">zw.</option>
+        </select>
+      </td>
+      <td class="calc-cell item-net-value">0,00</td>
+      <td class="calc-cell item-vat-value">0,00</td>
+      <td class="calc-cell item-gross-value">0,00</td>
+      <td><button type="button" class="remove-row-btn" aria-label="Usuń pozycję">✕</button></td>
+    `;
+    itemsBody.appendChild(tr);
+
+    tr.querySelectorAll(".item-qty, .item-price, .item-vat").forEach(el => {
+      el.addEventListener("input", () => { recalcRow(tr); recalcTotals(); });
+      el.addEventListener("change", () => { recalcRow(tr); recalcTotals(); });
+    });
+
+    tr.querySelector(".remove-row-btn").addEventListener("click", () => {
+      if (itemsBody.querySelectorAll(".item-row").length <= 1) {
+        // zawsze zostaw przynajmniej jeden wiersz
+        tr.querySelector(".item-name").value = "";
+        tr.querySelector(".item-qty").value = 1;
+        tr.querySelector(".item-price").value = "";
+        recalcRow(tr);
+        recalcTotals();
+        return;
+      }
+      tr.remove();
+      recalcTotals();
+    });
+
+    recalcRow(tr);
+  }
+
+  function recalcRow(tr) {
+    const qty = parseFloat(tr.querySelector(".item-qty").value) || 0;
+    const price = parseFloat(tr.querySelector(".item-price").value) || 0;
+    const vatSel = tr.querySelector(".item-vat").value;
+
+    const net = qty * price;
+    const vatRate = vatSel === "zw" ? 0 : parseFloat(vatSel) / 100;
+    const vatAmount = net * vatRate;
+    const gross = net + vatAmount;
+
+    tr.querySelector(".item-net-value").textContent = formatMoney(net);
+    tr.querySelector(".item-vat-value").textContent = formatMoney(vatAmount);
+    tr.querySelector(".item-gross-value").textContent = formatMoney(gross);
+
+    tr.dataset.net = net;
+    tr.dataset.vatAmount = vatAmount;
+    tr.dataset.gross = gross;
+  }
+
+  function recalcTotals() {
+    let sumNet = 0, sumVat = 0, sumGross = 0;
+    itemsBody.querySelectorAll(".item-row").forEach(tr => {
+      sumNet += parseFloat(tr.dataset.net) || 0;
+      sumVat += parseFloat(tr.dataset.vatAmount) || 0;
+      sumGross += parseFloat(tr.dataset.gross) || 0;
+    });
+    document.getElementById("sum-net").textContent = formatMoney(sumNet) + " zł";
+    document.getElementById("sum-vat").textContent = formatMoney(sumVat) + " zł";
+    document.getElementById("sum-gross").textContent = formatMoney(sumGross) + " zł";
+  }
+
+  document.getElementById("add-row-btn").addEventListener("click", () => addRow());
+
+  addRow(); // pierwsza pozycja na start
+
+  // ---- Drukowanie ----
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str || "";
+    return div.innerHTML;
+  }
+
+  function formatDate(str) {
+    if (!str) return "—";
+    const [y, m, d] = str.split("-");
+    return `${d}.${m}.${y}`;
+  }
+
+  document.getElementById("print-invoice-btn").addEventListener("click", () => {
+    buildInvoicePrint();
+    window.print();
+  });
+
+  function buildInvoicePrint() {
+    const rows = Array.from(itemsBody.querySelectorAll(".item-row")).map((tr, i) => {
+      const name = tr.querySelector(".item-name").value.trim() || "—";
+      const qty = tr.querySelector(".item-qty").value || "0";
+      const unit = tr.querySelector(".item-unit").value.trim() || "";
+      const price = parseFloat(tr.querySelector(".item-price").value) || 0;
+      const vatSel = tr.querySelector(".item-vat").value;
+      const vatLabel = vatSel === "zw" ? "zw." : vatSel + "%";
+      const net = parseFloat(tr.dataset.net) || 0;
+      const vatAmount = parseFloat(tr.dataset.vatAmount) || 0;
+      const gross = parseFloat(tr.dataset.gross) || 0;
+
+      return `
+        <tr>
+          <td class="lp">${i + 1}</td>
+          <td>${escapeHtml(name)}</td>
+          <td>${escapeHtml(qty)} ${escapeHtml(unit)}</td>
+          <td>${formatMoney(price)} zł</td>
+          <td>${vatLabel}</td>
+          <td>${formatMoney(net)} zł</td>
+          <td>${formatMoney(vatAmount)} zł</td>
+          <td>${formatMoney(gross)} zł</td>
+        </tr>
+      `;
+    }).join("");
+
+    const sumNetText = document.getElementById("sum-net").textContent;
+    const sumVatText = document.getElementById("sum-vat").textContent;
+    const sumGrossText = document.getElementById("sum-gross").textContent;
+
+    const notes = document.getElementById("inv_notes").value.trim();
+
+    const html = `
+      <div class="print-doc">
+        <div class="print-header invoice-print-header">
+          <div>
+            <h2>Faktura VAT nr ${escapeHtml(document.getElementById("inv_number").value) || "—"}</h2>
+            <div class="print-date">
+              Miejsce wystawienia: ${escapeHtml(document.getElementById("inv_place").value) || "—"}<br>
+              Data wystawienia: ${formatDate(document.getElementById("inv_issue_date").value)} &nbsp;|&nbsp;
+              Data sprzedaży: ${formatDate(document.getElementById("inv_sale_date").value)}<br>
+              Termin płatności: ${formatDate(document.getElementById("inv_due_date").value)} &nbsp;|&nbsp;
+              Sposób płatności: ${escapeHtml(document.getElementById("inv_payment").value)}
+            </div>
+          </div>
+        </div>
+
+        <div class="invoice-parties">
+          <div class="invoice-party">
+            <div class="invoice-party-label">Sprzedawca</div>
+            <div class="invoice-party-name">${escapeHtml(document.getElementById("seller_name").value)}</div>
+            <div>${escapeHtml(document.getElementById("seller_address").value)}</div>
+            <div>NIP: ${escapeHtml(document.getElementById("seller_nip").value)}</div>
+          </div>
+          <div class="invoice-party">
+            <div class="invoice-party-label">Nabywca</div>
+            <div class="invoice-party-name">${escapeHtml(document.getElementById("buyer_name").value) || "—"}</div>
+            <div>${escapeHtml(document.getElementById("buyer_address").value) || "—"}</div>
+            <div>${document.getElementById("buyer_nip").value ? "NIP: " + escapeHtml(document.getElementById("buyer_nip").value) : ""}</div>
+          </div>
+        </div>
+
+        <table class="print-table invoice-items-print-table">
+          <thead>
+            <tr>
+              <th>Lp.</th>
+              <th>Nazwa towaru / usługi</th>
+              <th>Ilość</th>
+              <th>Cena netto</th>
+              <th>VAT</th>
+              <th>Wartość netto</th>
+              <th>Kwota VAT</th>
+              <th>Wartość brutto</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+
+        <div class="invoice-summary-print">
+          <div><span>Razem netto:</span> <strong>${sumNetText}</strong></div>
+          <div><span>Razem VAT:</span> <strong>${sumVatText}</strong></div>
+          <div class="invoice-summary-total"><span>Razem do zapłaty:</span> <strong>${sumGrossText}</strong></div>
+        </div>
+
+        ${notes ? `
+        <div class="print-notes-section">
+          <div class="print-notes-label">Uwagi:</div>
+          <div>${escapeHtml(notes)}</div>
+        </div>` : ""}
+
+        <div class="invoice-signatures">
+          <div class="invoice-signature-box">
+            <div class="signature-line"></div>
+            <span>Wystawił(a)</span>
+          </div>
+          <div class="invoice-signature-box">
+            <div class="signature-line"></div>
+            <span>Odebrał(a)</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("print-section").innerHTML = html;
+  }
+</script>
+</body>
+</html>

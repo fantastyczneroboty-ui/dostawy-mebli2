@@ -523,3 +523,186 @@ main {
     margin: 0;
   }
 }
+
+/* ===== Faktura — formularz na ekranie ===== */
+.invoice-main { max-width: 900px; }
+
+.section-title {
+  font-size: 1rem;
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--amber);
+}
+.section-title:first-of-type { margin-top: 0.5rem; }
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.2rem;
+}
+.field-grid .field-wide { grid-column: 1 / -1; }
+
+.field textarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  resize: vertical;
+}
+.field textarea:focus { border-color: var(--amber); outline: none; }
+
+.items-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 0.8rem;
+}
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 780px;
+}
+.items-table th {
+  text-align: left;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  padding: 0.6rem 0.5rem;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--line);
+}
+.items-table td {
+  padding: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+.items-table .col-narrow { width: 90px; }
+.items-table .col-icon { width: 36px; }
+.items-table input, .items-table select {
+  width: 100%;
+  padding: 0.5rem 0.5rem;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.items-table select { color-scheme: dark; }
+.items-table .calc-cell {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--amber);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  text-align: right;
+  padding-right: 0.6rem;
+}
+.remove-row-btn {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.3rem;
+}
+.remove-row-btn:hover { color: var(--danger-dark); }
+
+.btn-small {
+  padding: 0.55rem 1rem;
+  font-size: 0.88rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0 1.2rem;
+}
+
+@media (max-width: 640px) {
+  .field-grid, .summary-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Faktura — wersja do druku ===== */
+.invoice-print-header h2 { font-size: 1.3rem; }
+
+.invoice-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+.invoice-party {
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  font-size: 0.9rem;
+  color: #222222;
+}
+.invoice-party-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #777777;
+  margin-bottom: 0.3rem;
+}
+.invoice-party-name {
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.invoice-items-print-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #444444;
+  border-bottom: 2px solid #111111;
+  padding: 0.5rem 0.4rem;
+}
+.invoice-items-print-table td.lp { color: #777777; width: 2rem; }
+.invoice-items-print-table td { font-size: 0.88rem; }
+
+.invoice-summary-print {
+  margin-top: 1rem;
+  margin-left: auto;
+  width: 280px;
+  font-size: 0.95rem;
+}
+.invoice-summary-print div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #dddddd;
+}
+.invoice-summary-print .invoice-summary-total {
+  border-bottom: 2px solid #111111;
+  font-size: 1.1rem;
+  padding-top: 0.5rem;
+}
+
+.invoice-signatures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 4rem;
+}
+.invoice-signature-box {
+  text-align: center;
+}
+.signature-line {
+  border-bottom: 1.5px solid #444444;
+  height: 2.5rem;
+}
+.invoice-signature-box span {
+  font-size: 0.78rem;
+  color: #777777;
+  display: block;
+  margin-top: 0.3rem;
+}
+
+@media print {
+  .invoice-main #invoice-form { display: none !important; }
+}
